@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To-Do list App</title>
+    <link rel="stylesheet" href="index.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="container">
+        <h2>To-Do list</h2>
+        <div class="inputs">
+            <input type="text" placeholder="Enter Your Task" id="inp">
+            <button onclick="addTask()">Add</button>
+            <button onclick="clearTasks()">Clear All</button>
+        </div>
+        <!-- storing the data from local storage --->
+        <ul class="text">
+            
+        </ul>
+    </div>
+    
+<script> 
+let inputs = document.getElementById("inp");
+let text = document.querySelector(".text");
+
+function addTask(){
+    if (inputs.value === "") {
+        alert('Please Write your Task !');
+    } else {
+        let newel = document.createElement("li");
+        newel.innerHTML= `${inputs.value} <i class="fa-solid fa-trash"></i>`;
+        text.appendChild(newel);
+        inputs.value = "";
+        newel.querySelector("i").addEventListener("click", removeTask);
+        newel.addEventListener("click", toggleCompleted);
+        newel.addEventListener("dblclick", editTask);
+        updateLocalStorage();
+    }
+}
+
+function removeTask(event) {
+    const taskItem = event.target.parentElement;
+    taskItem.remove();
+    updateLocalStorage();
+}
+
+function toggleCompleted(event) {
+    const taskItem = event.target;
+    taskItem.classList.toggle("completed");
+    updateLocalStorage();
+}
+
+function clearTasks() {
+    text.innerHTML = "";
+    updateLocalStorage();
+}
+
+function editTask(event) {
+    const taskItem = event.target;
+    const newText = prompt("Edit task:", taskItem.innerText);
+    if (newText !== null) {
+        taskItem.innerText = newText;
+        updateLocalStorage();
+    }
+}
+
+function updateLocalStorage() {
+    const tasks = [];
+    text.querySelectorAll("li").forEach(task => {
+        tasks.push(task.innerText);
+    });
+    localStorage.setItem("tasks", JSON.stringify(tasks));
+}
+
+function loadTasksFromLocalStorage() {
+    const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+    tasks.forEach(task => {
+        let newel = document.createElement("li");
+        newel.innerHTML= `${task} <i class="fa-solid fa-trash"></i>`;
+        text.appendChild(newel);
+        newel.querySelector("i").addEventListener("click", removeTask);
+        newel.addEventListener("click", toggleCompleted);
+        newel.addEventListener("dblclick", editTask);
+    });
+}
+loadTasksFromLocalStorage();
+
+</script>
+</body>
+</html>
